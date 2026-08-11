@@ -23,9 +23,23 @@ no `localStorage` do navegador.
 
 ## Como rodar
 
-Este é um site estático (HTML/CSS/JS), mas usa módulos ES (`<script type="module">`),
-que a maioria dos navegadores bloqueia ao abrir o arquivo diretamente (`file://`).
-Por isso, sirva a pasta com um servidor local simples:
+### Opção mais simples: um único arquivo HTML
+
+`assistente-financeiro.html`, na raiz do projeto, é uma versão autocontida —
+CSS, Chart.js, pdf.js e todo o código do app embutidos em um único arquivo.
+Basta dar duplo-clique nele para abrir no navegador; não precisa de servidor,
+internet ou instalar nada. É o arquivo recomendado para uso do dia a dia.
+
+Ele é gerado a partir do código-fonte em `js/`, `css/` e `index.html` pelo
+script `scripts/build-standalone.mjs` (rode `node scripts/build-standalone.mjs`
+após alterar o código-fonte, para atualizá-lo).
+
+### Opção para desenvolvimento: pasta servida localmente
+
+O restante do projeto (`index.html` + `js/` + `css/`) usa módulos ES
+(`<script type="module">`), que a maioria dos navegadores bloqueia ao abrir o
+arquivo diretamente (`file://`). Por isso, para editar e testar o código-fonte,
+sirva a pasta com um servidor local simples:
 
 ```bash
 # opção 1: Python (já vem instalado na maioria dos sistemas)

@@ -1,6 +1,6 @@
 import { parseNumberBR, brDateToIso } from '../util.js';
 
-const DATE_START_RE = /^(\d{2}\/\d{2}\/\d{4})\s+(.*)$/;
+const FATURA_DATE_START_RE = /^(\d{2}\/\d{2}\/\d{4})\s+(.*)$/;
 const TRAILING_VALUE_RE = /(-?\d{1,3}(?:\.\d{3})*,\d{2})\s*$/;
 const STANDALONE_4DIGIT_RE = /\b\d{4}\b/g;
 const CITY_TAIL_RE = /^(.*?)\s+([A-ZÇÃÕÁÉÍÓÚÂÊÔ][A-ZÇÃÕÁÉÍÓÚÂÊÔ \-]{2,})$/;
@@ -30,7 +30,7 @@ export function parseFatura(lines) {
   }
 
   for (const rawLine of lines) {
-    const dm = DATE_START_RE.exec(rawLine);
+    const dm = FATURA_DATE_START_RE.exec(rawLine);
     if (!dm) continue;
     const [, dateBr, rest] = dm;
     const iso = brDateToIso(dateBr);

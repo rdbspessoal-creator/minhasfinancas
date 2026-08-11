@@ -587,8 +587,17 @@ function showToast(message) {
 
 // ---------------------------------------------------------------------
 
-document.addEventListener('DOMContentLoaded', () => {
+function boot() {
   init();
   renderRulesList();
-  document.querySelectorAll('table.tx-table tbody').forEach(() => {}); // no-op, mantém ordem de leitura
-});
+}
+
+// Se este módulo só terminar de executar depois que o DOM já tiver disparado
+// "DOMContentLoaded" (ex.: quando há `await`s antes deste ponto, como no build
+// autocontido em um único arquivo .html), o evento nunca mais dispara — nesse
+// caso já é seguro iniciar direto, pois o documento já está pronto.
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', boot);
+} else {
+  boot();
+}
