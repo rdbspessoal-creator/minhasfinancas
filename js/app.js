@@ -149,7 +149,7 @@ function renderKpis() {
       <div class="value">${formatBRL(cur.poupanca)}</div>
       ${deltaHtml(cur.poupanca, prev.poupanca, false)}
     </div>
-    <div class="stat-tile ${saldoClass}">
+    <div class="stat-tile stat-tile--total ${saldoClass}">
       <div class="label">Saldo do mês</div>
       <div class="value">${formatBRL(cur.saldo)}</div>
       ${deltaHtml(cur.saldo, prev.saldo, false)}

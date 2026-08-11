@@ -58,7 +58,15 @@ appBundle = appBundle.replace(
   `const store = { ${storeExports.join(', ')} };\n\n// ---- js/charts.js ----`
 );
 
-const css = read('css/styles.css');
+let css = read('css/styles.css');
+// as fontes @font-face usam caminho relativo (funciona no dev server) — no
+// arquivo único isso precisa virar uma data: URI embutida.
+const fontMedium = readBin('vendor/fonts/zilla-slab-latin-500-normal.woff2').toString('base64');
+const fontSemibold = readBin('vendor/fonts/zilla-slab-latin-600-normal.woff2').toString('base64');
+css = css
+  .replace("url('../vendor/fonts/zilla-slab-latin-500-normal.woff2')", `url('data:font/woff2;base64,${fontMedium}')`)
+  .replace("url('../vendor/fonts/zilla-slab-latin-600-normal.woff2')", `url('data:font/woff2;base64,${fontSemibold}')`);
+
 const chartJs = readBin('vendor/chartjs/chart.umd.min.js').toString('base64');
 const pdfjsLib = readBin('vendor/pdfjs/pdf.min.mjs').toString('base64');
 const pdfjsWorker = readBin('vendor/pdfjs/pdf.worker.min.mjs').toString('base64');
