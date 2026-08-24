@@ -1,7 +1,7 @@
 :root {
   --cor-receita: #1a7f37;
   --cor-despesa: #c62828;
-  --cor-fundo: #f5f6f8;
+  --cor-fundo: #000000;
   --cor-texto: #1f2328;
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
 }
