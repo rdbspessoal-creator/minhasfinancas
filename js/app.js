@@ -554,7 +554,7 @@ function wireBackupModal() {
     const text = await file.text();
     const merge = confirm('OK = mesclar com os dados atuais.\nCancelar = substituir todos os dados atuais pelo backup.');
     try {
-      store.importBackup(text, { merge });
+      await store.importBackup(text, { merge });
       showToast('Backup importado com sucesso.');
       closeModal('modalBackup');
     } catch (err) {
@@ -564,7 +564,7 @@ function wireBackupModal() {
   });
 
   document.getElementById('btnClearAll').addEventListener('click', () => {
-    if (confirm('Isso vai apagar TODOS os lançamentos salvos neste navegador. Tem certeza?')) {
+    if (confirm('Isso vai apagar TODOS os lançamentos salvos no banco de dados. Tem certeza?')) {
       store.clearAllData();
       showToast('Dados apagados.');
       closeModal('modalBackup');
@@ -587,7 +587,8 @@ function showToast(message) {
 
 // ---------------------------------------------------------------------
 
-function boot() {
+async function boot() {
+  await store.init();
   init();
   renderRulesList();
 }

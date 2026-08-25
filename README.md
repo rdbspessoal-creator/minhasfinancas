@@ -1,8 +1,9 @@
 # Assistente Financeiro
 
-Dashboard financeiro pessoal, modular por mês, 100% client-side: roda inteiramente
-no navegador, sem backend e sem enviar dados para nenhum servidor. Tudo fica salvo
-no `localStorage` do navegador.
+Dashboard financeiro pessoal, modular por mês. A interface roda inteiramente no
+navegador (sem backend próprio); leitura de PDF e categorização acontecem
+localmente. Os lançamentos são salvos em um banco de dados Postgres (Supabase),
+o que permite acessar os mesmos dados de qualquer navegador/computador.
 
 ## Funcionalidades
 
@@ -21,20 +22,28 @@ no `localStorage` do navegador.
   categoria e evolução mês a mês.
 - **Backup**: exportar/importar todos os dados em um arquivo `.json`.
 
+## Banco de dados
+
+Os dados ficam no projeto Supabase `minhasfinancas-bd`, schema `public`:
+
+| Tabela | Conteúdo |
+| --- | --- |
+| `categorias` | Categorias do sistema (receita/despesa/poupança/neutro) |
+| `transacoes` | Lançamentos manuais e importados |
+| `correcoes_categorizacao` | Aprendizado: descrição normalizada → categoria escolhida pelo usuário |
+| `regras_categorizacao` | Regras por palavra-chave (`sistema` = padrão do app, `usuario` = criadas na tela de Categorias) |
+| `mcc_categorias` | Código MCC de fatura → categoria padrão |
+| `tipos_lancamento_categorias` | Tipo de lançamento de extrato → categoria padrão |
+
+O app se conecta usando a chave pública (`publishable key`) em `js/supabase-client.js`.
+**Row Level Security está desabilitado nessas tabelas** — qualquer pessoa com a
+URL do projeto pode ler/gravar. Isso é aceitável enquanto o app não tem
+autenticação de usuário; antes de tratar os dados como sensíveis, habilite RLS
+com políticas adequadas (idealmente após adicionar login).
+
 ## Como rodar
 
-### Opção mais simples: um único arquivo HTML
-
-`assistente-financeiro.html`, na raiz do projeto, é uma versão autocontida —
-CSS, Chart.js, pdf.js e todo o código do app embutidos em um único arquivo.
-Basta dar duplo-clique nele para abrir no navegador; não precisa de servidor,
-internet ou instalar nada. É o arquivo recomendado para uso do dia a dia.
-
-Ele é gerado a partir do código-fonte em `js/`, `css/` e `index.html` pelo
-script `scripts/build-standalone.mjs` (rode `node scripts/build-standalone.mjs`
-após alterar o código-fonte, para atualizá-lo).
-
-### Opção para desenvolvimento: pasta servida localmente
+### Opção recomendada: pasta servida localmente ou publicada como site estático
 
 O restante do projeto (`index.html` + `js/` + `css/`) usa módulos ES
 (`<script type="module">`), que a maioria dos navegadores bloqueia ao abrir o
@@ -52,7 +61,17 @@ npx serve .
 Depois acesse `http://localhost:8080` no navegador.
 
 Também é possível publicar como site estático (GitHub Pages, Netlify, Vercel, etc.) —
-basta apontar para a raiz do projeto, sem nenhum passo de build.
+basta apontar para a raiz do projeto, sem nenhum passo de build. É assim que a
+versão em produção é servida.
+
+### Build de arquivo único (`assistente-financeiro.html`) — desatualizado
+
+`assistente-financeiro.html` e `scripts/build-standalone.mjs` são de antes da
+integração com Supabase e ainda usam `localStorage`. `store.js` hoje depende de
+um import externo (`js/supabase-client.js` → CDN do supabase-js) que o script de
+build não sabe empacotar corretamente para o arquivo único. Até alguém ajustar
+o build para isso, use a versão servida (`index.html`) — ela é a que reflete o
+banco de dados atual.
 
 ## Estrutura
 
@@ -60,7 +79,8 @@ basta apontar para a raiz do projeto, sem nenhum passo de build.
 index.html              shell da página e modais
 css/styles.css           estilos (com paleta clara/escura)
 js/app.js                 controlador principal da interface
-js/store.js               persistência (localStorage) e estado
+js/store.js               estado da UI e persistência (Supabase)
+js/supabase-client.js      configuração do cliente Supabase
 js/categories.js          lista de categorias do sistema
 js/categorize.js          motor de categorização automática
 js/import.js               orquestra a leitura de um PDF até o preview
@@ -83,6 +103,6 @@ corrigir qualquer linha antes de gravar.
 
 ## Privacidade
 
-Nenhum dado sai do seu navegador: a leitura do PDF, a categorização e o
-armazenamento acontecem localmente. Não há chamadas de rede para nenhum serviço
-externo.
+A leitura do PDF e a categorização acontecem localmente no navegador. Os
+lançamentos, porém, são enviados e armazenados no banco de dados Supabase (ver
+seção "Banco de dados" acima) — não é mais um app 100% offline/local.
